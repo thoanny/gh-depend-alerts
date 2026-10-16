@@ -16,6 +16,8 @@
     "alerts": "node scripts/fetch-alerts.mjs"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3",
     "vue": "^3.5.42"
   },
   "devDependencies": {
@@ -24,6 +26,7 @@
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/eslint-config-typescript": "^14.9.0",
     "@vue/tsconfig": "^0.9.1",
+    "daisyui": "^5.7.50",
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.82.0",
