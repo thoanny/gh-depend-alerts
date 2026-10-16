@@ -1,48 +1,64 @@
 # gh-depend-alerts
 
-This template should help get you started developing with Vue 3 in Vite.
+Petit tableau de bord pour avoir une vue d'ensemble des alertes de sécurité **Dependabot** sur l'ensemble de ses repositories GitHub.
 
-## Recommended IDE Setup
+GitHub n'offre pas de vue globale pour un compte personnel (la _Security overview_ n'existe que pour les organisations). Ce projet comble ce manque : un script récupère les alertes de tous les repos via la CLI `gh`, puis une application Vue les affiche triées par gravité.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Fonctionnement
 
-## Recommended Browser Setup
+1. `npm run alerts` interroge l'API GitHub (via `gh`) et écrit le résultat dans `public/alerts.json`, avec la date de récupération.
+2. L'application Vue lit ce fichier statique et l'affiche : totaux par sévérité, tableau par repository, détail des alertes au clic.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+L'API n'est donc sollicitée qu'à la demande, et aucun token n'est exposé dans le navigateur.
 
-## Type Support for `.vue` Imports in TS
+## Prérequis
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- [Node.js](https://nodejs.org) 18 ou plus
+- [GitHub CLI](https://cli.github.com) 2.48 ou plus (option `--slurp`), authentifiée :
 
-## Customize configuration
+```bash
+gh auth login
+gh auth refresh -s security_events
+```
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Installation
 
-## Project Setup
-
-```sh
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Utilisation
 
-```sh
+```bash
+# Récupérer les alertes (tous les repos du compte connecté)
+npm run alerts
+
+# ... ou ceux d'un compte / d'une organisation précise
+npm run alerts -- nom-du-compte
+
+# Lancer l'application
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+Relancer `npm run alerts` à chaque fois que l'on veut actualiser les données. La date de dernière récupération est affichée en haut de la page.
 
-```sh
-npm run build
+> `public/alerts.json` contient des informations sur des repos potentiellement privés : il est ignoré par Git (voir `.gitignore`) et ne doit pas être publié.
+
+## Stack
+
+- [Vue 3](https://vuejs.org) (Composition API) + TypeScript
+- [Vite](https://vite.dev)
+- [Tailwind CSS](https://tailwindcss.com) + [daisyUI](https://daisyui.com)
+- [GitHub CLI](https://cli.github.com) pour la collecte des données
+
+## Structure
+
+```
+scripts/fetch-alerts.mjs   Collecte des alertes via gh → public/alerts.json
+src/App.vue                Interface (tableau, totaux, détail)
+public/alerts.json         Données générées (non versionnées)
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+## À propos du code
 
-```sh
-npm run lint
-```
+Le code initial (script de collecte et composant `App.vue`) a été généré avec l'assistant IA [Claude](https://claude.ai) d'Anthropic, puis relu, adapté et personnalisé par l'auteur (passage à TypeScript, intégration de Tailwind et daisyUI, ajustements de l'interface).
